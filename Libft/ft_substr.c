@@ -6,7 +6,7 @@
 /*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/06 19:21:27 by sunhpark          #+#    #+#             */
-/*   Updated: 2020/07/06 21:21:55 by sunhpark         ###   ########.fr       */
+/*   Updated: 2020/07/18 15:10:05 by sunhpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	char				*s_ptr;
 	unsigned	int		i;
 
-	substr = (char*)malloc(sizeof(char) * len);
+	if (!s)
+		return (0);
+	if (ft_strlen(s) <= start)
+		return (ft_strdup(""));
+	substr = (char*)malloc(sizeof(char) * (len + 1));
 	if (!substr)
 		return (0);
 	s_ptr = (char*)s;
@@ -28,5 +32,6 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		*(substr + i) = *(s_ptr + start + i);
 		i++;
 	}
+	*(substr + i) = '\0';
 	return (substr);
 }

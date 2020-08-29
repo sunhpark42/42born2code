@@ -1,24 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_putnbr_fd_temp.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/16 16:03:59 by sunhpark          #+#    #+#             */
+/*   Updated: 2020/07/16 16:04:04 by sunhpark         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 void	ft_putnbr_fd(int n, int fd)
 {
-	int				i;
-	int				neg;
-	char			c;
-	
-	neg = 1;
-	if (n < 0)
-		neg = -neg;
-	i = 1000000000;
-	while (n / i == 0)
-		i /= 10;
-	if(n % i == 0)
-		write(fd, "0", 1);
-	while (n % i != 0)
+	if (fd < 0)
+		return ;
+	if (n == -2147483648)
 	{
-		c = neg * (n / i) + '0';
-		write(fd, &c, 1);
-		n %= i;
-		i /= 10;
+		ft_putchar_fd('-', fd);
+		ft_putchar_fd('2', fd);
+		ft_putnbr_fd(147483648, fd);
+	}
+	else if (n >= 0)
+	{
+		if (n >= 10)
+			ft_putnbr_fd(n / 10, fd);
+		ft_putchar_fd(n % 10 + '0', fd);
+	}
+	else
+	{
+		ft_putchar_fd('-', fd);
+		ft_putnbr_fd(-1 * n, fd);
 	}
 }

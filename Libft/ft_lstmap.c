@@ -6,7 +6,7 @@
 /*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/11 15:37:57 by sunhpark          #+#    #+#             */
-/*   Updated: 2020/07/11 15:51:39 by sunhpark         ###   ########.fr       */
+/*   Updated: 2020/07/16 16:08:08 by sunhpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 	if (!ret_lst)
 		return (0);
 	p_lst = lst->next;
-	while(p_lst)
+	while (p_lst)
 	{
 		new_lst = ft_lstnew(f(p_lst->content));
 		if (!new_lst)
@@ -35,5 +35,5 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 		ft_lstadd_back(&ret_lst, new_lst);
 		p_lst = p_lst->next;
 	}
-	return (new_lst);
+	return (ret_lst);
 }

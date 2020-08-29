@@ -1,39 +1,53 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_itoa_temp.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/16 14:54:59 by sunhpark          #+#    #+#             */
+/*   Updated: 2020/07/16 15:58:55 by sunhpark         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-char	*ft_itoa(int n)
+static	int		ft_numlen(int n)
 {
-	int				neg;
-	int				len;
-	int				nb;
-	char			*ret;
-	int				i;
-	
+	int			len;
+
 	len = 0;
-	nb = n;
-	while(nb != 0)
+	if (n <= 0)
+		len++;
+	while (n != 0)
 	{
-		nb /= 10;
+		n /= 10;
 		len++;
 	}
+	return (len);
+}
+
+char			*ft_itoa(int n)
+{
+	char		*ret;
+	int			neg;
+	int			len;
+
 	neg = 1;
-	if(n <= 0)
-	{
+	len = ft_numlen(n);
+	if (n < 0)
 		neg = -neg;
-		len ++;
-	}
 	ret = (char*)malloc(sizeof(char) * (len + 1));
 	if (!ret)
 		return (0);
-	nb = n;
-	i = len - 1;
-	while(i >= 0)
+	*(ret + len) = '\0';
+	while (len > 0)
 	{
-		*(ret + i) = neg * (nb % 10) + '0';
-		nb /= 10;
-		i--;
+		*(ret + len - 1) = (neg * (n % 10)) + '0';
+		n /= 10;
+		len--;
 	}
-	*(ret + len) = 0;
-	if (n < 0)
-		*(ret) = '-';
+	if (neg < 0)
+		*ret = '-';
 	return (ret);
 }

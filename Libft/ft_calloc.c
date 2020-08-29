@@ -6,7 +6,7 @@
 /*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 21:30:37 by sunhpark          #+#    #+#             */
-/*   Updated: 2020/07/02 21:42:31 by sunhpark         ###   ########.fr       */
+/*   Updated: 2020/07/18 15:01:05 by sunhpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,11 @@
 
 void	*ft_calloc(size_t count, size_t size)
 {
-	size_t				i;
 	void				*ret;
 
-	i = 0;
-	ret = malloc(sizeof(size) * count);
+	ret = malloc(size * count);
 	if (!ret)
 		return (0);
-	while (i < count)
-	{
-		*(char*)(ret + i) = 0;
-		i++;
-	}
+	ret = ft_bzero(ret, size * count);
 	return (ret);
 }

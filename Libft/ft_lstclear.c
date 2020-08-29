@@ -6,7 +6,7 @@
 /*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/11 14:23:37 by sunhpark          #+#    #+#             */
-/*   Updated: 2020/07/11 16:23:18 by sunhpark         ###   ########.fr       */
+/*   Updated: 2020/07/18 15:53:08 by sunhpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,14 @@ void	ft_lstclear(t_list **lst, void (*del)(void*))
 {
 	t_list			*del_next_lst;
 
-	del_next_lst = lst->next;
-	while (lst)
+	if (!lst)
+		return ;
+	del_next_lst = *lst;
+	while (del_next_lst)
 	{
-		ft_lstdelone(lst, del);
-		lst = del_next_lst;
-		del_next_lst = lst->next;
+		*lst = (*lst)->next;
+		ft_lstdelone(del_next_lst, del);
+		del_next_lst = *lst;
 	}
+	*lst = 0;
 }

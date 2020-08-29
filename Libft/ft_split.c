@@ -1,22 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split_temp.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/07/18 13:42:40 by sunhpark          #+#    #+#             */
+/*   Updated: 2020/08/29 19:44:23 by sunhpark         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-int		count_word(char const *s, char c)
+int		word_cnt(char const *s, char c)
 {
-	int			cnt;
 	int			i;
+	int			cnt;
 	int			flag;
-	
+
 	i = 0;
 	cnt = 0;
-	flag = 0;
+	flag = 1;
 	while (*(s + i))
 	{
 		if (*(s + i) == c)
-			flag = 0;
-		else if (*(s + i) != c && flag == 0)
-		{	
-			cnt++;
 			flag = 1;
+		else if (*(s + i) != c && flag == 1)
+		{
+			cnt++;
+			flag = 0;
 		}
 		i++;
 	}
@@ -27,12 +39,10 @@ int		word_len(char const *s, char c)
 {
 	int			i;
 	int			len;
-	
+
 	i = 0;
 	len = 0;
-	while(*(s + i) && *(s + i) == c)
-		i++;
-	while(*(s + i) && *(s + i) != c)
+	while (*(s + i) && *(s + i) != c)
 	{
 		len++;
 		i++;
@@ -42,80 +52,53 @@ int		word_len(char const *s, char c)
 
 void	free_ret(char **ret, int idx)
 {
-	int				i;
-	
+	int			i;
+
 	i = 0;
 	while (i < idx)
 	{
-		free(*(ret + i));
+		free(ret + i);
 		i++;
 	}
 	free(ret);
 }
 
-char	**put_word(char **ret, char const *s, char c, int cnt)
+char	**put_words(char **ret, int ret_len, char const *s, char c)
 {
-	int			i;	
+	int			i;
 	int			j;
-	int			len;
-	char		*s_ptr;
-	
+
 	i = 0;
-	len = 0;
-	s_ptr = (char*)s;
-	while (i < cnt)
+	j = 0;
+	while (i < ret_len)
 	{
-		j = 0;
-		len = word_len(s_ptr, c);
-		*(ret + i) = (char*)malloc(sizeof(char) * (len + 1));
+		while (*(s + j) && *(s + j) == c)
+			j++;
+		*(ret + i) = (char*)malloc(sizeof(char) * (word_len(s + j, c) + 1));
 		if (!(*(ret + i)))
 		{
 			free_ret(ret, i);
 			return (0);
 		}
-		while (*(s_ptr + j) == c)
-			j++;
-		ft_strlcpy(*(ret + i), s_ptr + j, len + 1);
-		s_ptr += j + len;
+		ft_strlcpy(*(ret + i), s + j, word_len(s + j, c) + 1);
+		j += word_len(s + j, c);
 		i++;
 	}
-	*(ret + i) = 0;
+	*(ret + i) = NULL;
 	return (ret);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	char		**ret;
-	int			word_cnt;
-	
+	char **ret;
+
 	if (!s)
 		return (0);
-	if (!c)
-		return ((char**)s);
-	word_cnt = count_word(s, c);
-	ret = (char**)malloc(sizeof(char*) * (word_cnt + 1));
+	ret = (char**)malloc(sizeof(char*) * (word_cnt(s, c) + 1));
 	if (!ret)
 		return (0);
-	ret = put_word(ret, s, c, word_cnt);
+	ret = put_words(ret, word_cnt(s, c), s, c);
+	if (!ret)
+		return (0);
 	return (ret);
 }
-
-/*int		main(void)
-{
-	char	str[] = "sunny1pll1write";
-	char	**ret;
-	int		i;
-
-	ret = ft_split(str, '1');
-	if(!ret)
-		return (0);
-	printf("original : %s\n", str);
-	i = 0;
-	while(*(ret + i))
-	{
-		printf("%d : %s\n", i, *(ret + i));
-		i++;
-	}
-	return (0);
-}
-*/

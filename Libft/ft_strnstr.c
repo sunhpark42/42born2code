@@ -6,7 +6,7 @@
 /*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 20:53:57 by sunhpark          #+#    #+#             */
-/*   Updated: 2020/07/02 21:18:10 by sunhpark         ###   ########.fr       */
+/*   Updated: 2020/07/18 14:55:05 by sunhpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,11 @@ char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 	n_len = ft_strlen(needle);
 	h_len = ft_strlen(haystack);
 	i = 0;
+	if (len == 0 && n_len == 0)
+		return ((char*)haystack);
 	while (i < len)
 	{
-		if (!ft_strncmp((haystack + i), needle, n_len) && len - i > n_len)
+		if (!ft_strncmp((haystack + i), needle, n_len) && len - i >= n_len)
 			return ((char*)(haystack + i));
 		i++;
 	}

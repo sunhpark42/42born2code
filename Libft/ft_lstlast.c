@@ -6,7 +6,7 @@
 /*   By: sunhpark <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/11 14:17:57 by sunhpark          #+#    #+#             */
-/*   Updated: 2020/07/11 14:19:26 by sunhpark         ###   ########.fr       */
+/*   Updated: 2020/07/18 15:51:34 by sunhpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ t_list	*ft_lstlast(t_list *lst)
 	t_list		*p_lst;
 
 	p_lst = lst;
+	if (!lst)
+		return (0);
 	while (p_lst->next)
 	{
 		p_lst = p_lst->next;
