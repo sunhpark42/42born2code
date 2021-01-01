@@ -18,45 +18,36 @@ ft_server 는시스템 관리에 대한 과제로, 서버를 운영하는 것을
 ### Docker Command
 
 - Tutorial
-    - build 가 필요한 레포를 복사하고, container 로 실행
-
-    ```jsx
-    docker run --name repo alpine/git \https://github.com/docker/getting-started.git docker cp repo:/git/getting-started/ .
-    ```
-
-    - build image ( build 할 디렉토리 내에서 실행)
-
-    ```jsx
-    docker build -t docker101tutorial .
-    ```
-
-    - Start Container ( 빌드한 이미지로 컨테이너 시작 )
-
-    ```jsx
-    docker run -d -p 80:80 \ --name docker-tutorial docker101tutorial 
-    ```
-
-    - Save and share your image on Docker Hub to enable other users to easily download and run the image on any destination machine.
-
-    ```jsx
-    docker tag docker101tutorial sunhpark/docker101tutorial
-    docker push sunhpark/docker101tutorial
-    ```
-
-    - To push a new tag to this repository,
-
-    ```jsx
-    docker push sunhpark/docker101tutorial:tagname
-    ```
-
-    - 접속 하는 방법
-
-    ```jsx
-    http://localhost/tutorial/
-    ```
-
 - `docker run` flag
-    - `-d` : detached mode 로 container 를 실행
-    - `-p {#host-port}:{#container-port}` : map port number
-    - `--name {name}`  :
-    - single character flag는 같이 사용 될 수 있음 (ex. `-dp` )
+- `docker build` flag
+    - `-t`  : our image의 flag tag, 해당 image 에 이름을 지어주는 과정.
+    - `.` : 현재 폴더에 있는 Dockerfile을 이용하라는 명령
+
+### Application 올리기
+
+- application source code 를 필요로 함(local or repo)
+- App folder 내에 package.json, ./src, ./spec
+
+### Container Image Compile
+
+1. `Dockerfile` 을 생성 (package.json 과 같은 폴더 안에 있어야 함)
+
+    ```jsx
+    // Dockerfile
+    FROM node:12-apline
+    WORKDIR /app
+    COPY . .
+    RUN yarn install --production
+    CMD ["node", "src/index.js"]
+    ```
+
+2. `Dockerfile`이 있는 폴더에서 `docker build` 를 이용해서 containger image 를 build 함.
+
+    ```jsx
+    docker build -t getting-started 
+    ```
+
+    - 이때 에러가 나는데, 에러메세지는 다음과 같다.
+    - `Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?`
+    - docker daemon에 연결할 수 없다. 라는 에러.
+    - docker daemon ? Docker API request를 받고, Docker objects(images, containers, networks, and volumes) 를 관리함. Docker service를 관리하는 다른 daemon들과 함께 소통 가능.
