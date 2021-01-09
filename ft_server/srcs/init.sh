@@ -24,7 +24,7 @@ wget https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-language
 tar -xvf phpMyAdmin-5.0.2-all-languages.tar.gz
 mv phpMyAdmin-5.0.2-all-languages phpmyadmin
 mv phpmyadmin /var/www/html
-mv rm phpMyAdmin-5.0.2-all-languages.tar.gz
+rm phpMyAdmin-5.0.2-all-languages.tar.gz
 mv ./srcs/config.inc.php ./var/www/html/phpmyadmin/config.inc.php
 
 service nginx reload
@@ -37,3 +37,13 @@ mysql < ./srcs/wordpress.sql -u root --skip-password
 
 service mysql start
 service nginx reload;
+
+# wordpress
+wget https://wordpress.org/latest.tar.gz
+tar -xvf latest.tar.gz
+mv wordpress var/www/html
+chown -R www-data:www-data /var/www/html/wordpress
+
+mv ./srcs/wp-config.php var/www/html/wordpress/
+
+service nginx reload
