@@ -36,7 +36,7 @@ mysql < var/www/html/phpmyadmin/sql/create_tables.sql -u root --skip-password
 mysql < ./srcs/wordpress.sql -u root --skip-password
 
 service mysql start
-service nginx reload;
+service nginx reload
 
 # wordpress
 wget https://wordpress.org/latest.tar.gz
