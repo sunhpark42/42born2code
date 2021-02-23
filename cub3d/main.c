@@ -11,6 +11,9 @@ t_texture		w_texture;
 
 double			w_ratio;
 
+int visible[1000][1000] = {0,};
+double zbuf[SX];
+
 void	print_int_array(char *arr)
 {
 	int				i;
@@ -496,6 +499,7 @@ t_bool		get_wall_intersection(t_gameinfo *game_info, double ray, double px, doub
 			printf("HIT!!!!!!!!!!WALL!!!!!!!!!!\n");
 			break;
 		}
+		visible[mapy][mapx] = 1;
 
 		if (hit_side == VERT) nx += xstep;
 		else ny += ystep;
@@ -628,6 +632,81 @@ double get_fov_min_dist() /* distance to the floor-FOV intersection point */
     return T;
 }
 
+static	int	cmp_sprites(const void *a, const void *b)
+{
+	return (((const t_sprite*)a)->dist > ((const t_sprite*)b)->dist) ? -1 : 1;
+}
+
+static	t_sprite	*get_visible_sprites(double px, double py, double p_th, int *pcnt)
+{
+	int n = 0;
+	t_sprite *sp = NULL;
+
+	for (int x = 0; x < 8; x++) {
+		for (int y = 0; y < 7; y++) {
+			if (visible[y][x] == 0 || map_get_cell(game_info, x, y) != '2')
+				continue;
+			if (n == 0) sp = (t_sprite *)malloc(sizeof(t_sprite));
+			else sp = (t_sprite *)realloc(sp, sizeof(t_sprite) * (n+1));
+
+			//sp[n].tex = w_image;
+			sp[n].x = x;
+			sp[n].y = y;
+			sp[n].th = atan2(y + 0.5 - py, x + 0.5 - px);
+			if (sp[n].th < 0) sp[n].th += _2PI;
+			sp[n].dist = l2dist(px, py, x + 0.5, y + 0.5) * cos(p_th - sp[n].th);
+			n++;
+		}
+	}
+	*pcnt = n;
+	printf("%d\n", n);
+	return sp;
+}
+
+static const double pixel_per_angle = (SX - 1.0) / FOV_H;
+
+static void draw_sprites(px, py, p_th)
+{
+	int		nsp = 0;
+	t_sprite *sp = get_visible_sprites(px, py, p_th, &nsp);
+
+	// order
+	qsort(sp, nsp, sizeof(t_sprite), cmp_sprites);
+
+	for(int i = 0; i < nsp; i++)
+	{
+		int sh = get_wall_height(sp[i].dist);
+		// double lum = get_luminosity(sp[i].dist);
+		//t_image *ptex = texture_get(sp[i].tex);
+		// 현재는 w_image 로 통일
+
+		double angle = sp[i].th - p_th;
+		if (angle > M_PI ) angle -= _2PI;
+		else if (angle < -M_PI ) angle += _2PI;
+
+		int cx = (int)((FOVH_2 - angle) * pixel_per_angle);
+		int xmin = MAX(0, cx - sh/2);
+		int xmax = MIN(SX, cx + sh/2);
+
+		for (int x=xmin; x < xmax; x++) {
+			if (sp[i].dist > zbuf[x] ) continue; // behind wall
+			if (sp[i].dist < PL_RADIUS ) continue;
+
+			double txratio = (double)(x-cx)/sh + 0.5;
+			int tx = (int)(txratio * w_texture.width);
+			int y0 = (int)((SY - sh) / 2.0);
+
+			for (int y = MAX(0, y0); y < MIN(SY, y0 + sh); y++)
+			{
+				int ty = (int)((double)(y - y0) * w_texture.height / sh);
+				if (w_texture.image->data[((int)floor(ty) * SX) + (int)floor(tx)] == 0x000000) continue;
+				image.data[((int)floor(y) * SX + (int)floor(x))] = 0xff0000 + i * 100;
+			}
+		}
+	}
+	if (nsp > 0) free(sp);
+}
+
 int			render(t_player *player, t_gameinfo *game_info, t_image *image)
 {
 	double px;
@@ -652,7 +731,7 @@ int			render(t_player *player, t_gameinfo *game_info, t_image *image)
         for( int y1 =y+1; y1<SY; y1++ ) {
             double h = (double)(SY-1-y1)/SY;
             double D = EC / (1. - 2*h);
-            double lum_f = get_luminosity(D);
+//            double lum_f = get_luminosity(D);
 
 			draw_line(image, game_info, 0, y1, SX, y1, 0xffffff);
 			draw_line(image, game_info, 0, SY - 1 -y1, SX, SY - 1 - y1, 0xff00ff);
@@ -669,11 +748,13 @@ int			render(t_player *player, t_gameinfo *game_info, t_image *image)
 	{
 		t_dir	dir;
 		double wdist = cast_single_ray(game_info, x, px, py, th, &dir);
+		zbuf[x] = wdist;
 		printf("** ray %3d : disx %.2f\n", x, wdist);
 		draw_wall(game_info, image, wdist, x, wall_colors[dir], xstart);
 		x++;
 	}
 
+	draw_sprites(px, py, th);
 	mlx_put_image_to_window(mlx, window, image -> image_ptr, 0, 0);
 	return (0);
 }
@@ -785,6 +866,13 @@ int			main(int argc, char *argv[])
 {
 	int				fd;
 
+	for (int i = 0; i < 1000; i++)
+	{
+		for (int j = 0; j < 1000; j++)
+		{
+			visible[i][j] = 0;
+		}
+	}
 	if (argc != 2)
 	{
 		printf("Error\n");

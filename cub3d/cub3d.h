@@ -49,8 +49,10 @@
 # define WALL_V					1.0
 
 # define _2PI       6.28318530717958647692 /* 2 * MPI */
-# define ROT_UNIT				0.1
+# define ROT_UNIT				0.03
 # define MOVE_UNIT				0.1
+
+# define PL_RADIUS						1
 
 static const double ANGLE_PER_PIXEL = FOV_H / (SX - 1. );
 static const double FOVH_2 = FOV_H / 2.0;
@@ -59,6 +61,14 @@ enum { VERT, HORIZ };
 
 typedef enum { false = 0, true = 1 } t_bool;
 typedef enum { DIR_N = 0, DIR_E, DIR_W, DIR_S } t_dir;
+
+typedef struct s_sprite
+{
+	int			tex;
+	int			x, y;
+	double		dist;
+	double		th;
+} t_sprite;
 
 typedef	struct	s_gameinfo
 {
