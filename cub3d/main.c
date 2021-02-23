@@ -1,127 +1,85 @@
 #include "cub3d.h"
 
-// t_image image;
-// t_image w_image;
-// t_gameinfo *game_info;
-// t_player *player;
-// void *mlx;
-// void *window;
+void draw_wall(t_mlx *mlx, t_texture *texture, int x)
+{
+	int wh;
 
-// t_texture w_texture;
+	// double fov_h = get_fovh();
+	// double fov_v = fov_h * (double)mlx->game_info->window_h / (double)mlx->game_info->window_w;
+	wh = get_wall_height(mlx->ray->w_dist, SY, FOV_V);
+	// wh = get_wall_height(mlx->ray->w_dist, mlx->game_info->window_h, get_fovv(get_fovh(), mlx->game_info->window_w, mlx->game_info->window_h));
+	int y0 = (int)((mlx->game_info->window_h - wh) / 2.0);
+	int y1 = y0 + wh - 1;
 
-// double w_ratio;
+	int ystart = MAX(0, y0);
+	int yend = MIN(mlx->game_info->window_h - 1, y1);
+	int yoffset = ystart;
 
-// void draw_wall(t_gameinfo *game_info, t_image *image, double dist, int x, int color, int xstart)
-// {
-// }
-// {
-// 	int wh;
-// 	int ww;
+	double h;
+	h = yend - ystart;
 
-// 	wh = get_wall_height(dist);
-
-// 	/* start/end y position of the wall slice */
-// 	int y0 = (int)((game_info->window_h - wh) / 2.0);
-// 	int y1 = y0 + wh - 1;
-
-// 	/* need clipping */
-// 	int ystart = MAX(0, y0);
-// 	int yend = MIN(game_info->window_h - 1, y1);
-
-// 	//draw_line(image, game_info, x, ystart, x, yend, w_image_array[y * 128 / (y1 - y0)][]);
-
-// 	double delta_x;
-// 	double delta_y;
-// 	double step;
-
-// 	delta_y = (double)yend - (double)ystart;
-// 	step = fabs(delta_y);
-// 	delta_y /= step;
-
-// 	double ye;
-// 	double ys;
-
-// 	ye = yend;
-// 	ys = ystart;
-
-// 	double h;
-// 	double w;
-
-// 	h = ye - ys;
-// 	w = h * SX / SY;
-
-// 	double y_offset;
-// 	double x_offset;
-// 	y_offset = ys;
-
-// 	while (ystart < yend)
-// 	{
-// 		image->data[((int)floor(ystart) * game_info->window_w + (int)floor(x))] =
-// 				w_texture.image->data[((int)floor((ystart - ys) * w_texture.height / h) * w_texture.width) + (int)floor((w_texture.width * w_ratio))];
-// 		ystart++;
-// 	}
-// }
+	while (ystart < yend)
+	{
+		// mlx->canvas->data[((int)floor(ystart) * mlx->game_info->window_w + (int)floor(x))] = 0xff00ff;
+		mlx->canvas->data[(int)floor(ystart) * mlx->game_info->window_w + (int)floor(x)] =
+				texture->image->data[((int)floor((ystart - yoffset) * texture->height / h) * texture->width) + (int)floor((texture->width * mlx->ray->w_ratio))];
+		ystart++;
+	}
+}
 
 // // int render(t_player *player, t_gameinfo *game_info, t_image *image)
-// int render(t_mlx *mlx)
-// {
-// 	return (0);
-// }
-// {
-// 	double px;
-// 	double py;
-// 	double th;
+void draw_floor(t_mlx *mlx, t_render *render)
+{
+	int y;
 
-// 	px = mlx->player->x;
-// 	py = mlx->player->y;
-// 	th = mlx->player->th;
-
-// 	fill_window(mlx, 0x000000);
-
-// 	int x, y;
-
-// 	y = 0;
-// 	if (y < SY - 1)
-// 	{
-// 		double EC = get_fov_min_dist();
-
-// 		for (int y1 = y + 1; y1 < SY; y1++)
-// 		{
-// 			double h = (double)(SY - 1 - y1) / SY;
-// 			double D = EC / (1. - 2 * h);
-// 			// .. double lum_f = get_luminosity(D);
-
-// 			draw_line(image, game_info, 0, y1, SX, y1, 0xffffff);
-// 			draw_line(image, game_info, 0, SY - 1 - y1, SX, SY - 1 - y1, 0xff00ff);
-// 		}
-// 	}
-
-// 	x = 0;
-// 	int tx = -1;
-// 	int ty = -1;
-// 	t_intersection *inter;
-// 	while (x < SX)
-// 	{
-// 		t_dir dir;
-
-// 		inter = (t_intersection *)malloc(sizeof(t_intersection));
-// 		if (!inter)
-// 			print_error("ERROR");
-// 		init_intersection(mlx, inter);
-// 		double wdist = cast_single_ray(game_info, inter, x);
-// 		printf("** ray %3d : disx %.2f\n", x, inter->wdist);
-// 		draw_wall(game_info, image, wdist, x, wall_colors[dir], xstart);
-// 		if (inter)
-// 			free(inter);
-// 		x++;
-// 	}
-
-// 	mlx_put_image_to_window(mlx, window, image->image_ptr, 0, 0);
-// 	return (0);
-// }
+	y = 0;
+	if (y < mlx->game_info->window_h - 1)
+	{
+		render->f_ec = get_fov_min_dist(mlx->game_info);
+		while (y + 1 < mlx->game_info->window_h)
+		{
+			render->f_h = (double)(mlx->game_info->window_h - 1 - y) / mlx->game_info->window_h;
+			render->f_d = render->f_ec / (1.0 - 2 * render->f_h);
+			// double lum_f = get_luminosity(D);
+			draw_horiz_line(mlx, y, 0, mlx->game_info->window_w, 0xffffff);
+			draw_horiz_line(mlx, mlx->game_info->window_h - 1 - y, 0, mlx->game_info->window_w, 0xff0000);
+			y++;
+		}
+	}
+}
 
 int render(t_mlx *mlx)
 {
+	t_render *render;
+	t_intersection *inter;
+	t_dir dir;
+	double wdist;
+	int x;
+
+	render = (t_render *)malloc(sizeof(t_render) * 1);
+	if (!render)
+		print_error("CANNOT ASSIGN RENDER");
+	inter = (t_intersection *)malloc(sizeof(t_intersection) * 1);
+	if (!inter)
+		print_error("CANNOT ASSIGN INTERSECTION");
+	// init_intersection(mlx, inter);
+
+	render->px = mlx->player->x;
+	render->py = mlx->player->y;
+	render->th = mlx->player->th;
+
+	fill_window(mlx, 0x000000);
+	draw_floor(mlx, render);
+
+	x = 0;
+	while (x < mlx->game_info->window_w)
+	{
+		mlx->ray->w_dist = cast_single_ray(mlx, inter, x);
+		printf("** ray %3d : dist %.2f\n", x, mlx->ray->w_dist);
+		draw_wall(mlx, mlx->w_texture, x);
+		x++;
+	}
+	mlx_put_image_to_window(mlx, mlx->window, mlx->canvas->image, 0, 0);
 	return (0);
 }
 
@@ -150,19 +108,13 @@ int main(int argc, char *argv[])
 	/* mlx */
 
 	mlx->window = mlx_new_window(mlx->mlx, mlx->game_info->window_w, mlx->game_info->window_h, "SUNNY's CUB3D");
-	// window = mlx_new_window(mlx, game_info->window_w, game_info->window_h, "SUNNY's CUB3D");
 	mlx_hook(mlx->window, X_EVENT_KEY_PRESS, 0, &key_press, mlx);
 
 	print_gameinfo(mlx->game_info);
 	load_textures(mlx);
-
-	mlx_put_image_to_window(mlx->mlx, mlx->window, mlx->w_texture->image->image, 0, 0);
-	// load_image();
+	mlx->canvas = create_image(mlx, mlx->game_info->window_w, mlx->game_info->window_h);
 	/* IMAGE */
-
-	//fill_window(&image, game_info, 0x0000ff);
-	//draw_line(&image, game_info, 10, 0, 10, 400, 0xff0000);
-	// render(mlx);
+	render(mlx);
 
 	mlx_loop(mlx->mlx);
 

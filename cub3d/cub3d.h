@@ -41,32 +41,32 @@
 
 /* RAY CASTING CONSTANTS */
 #define EPS (1e-06)
-// #define IS_ZERO(d) (fabs(d) < EPS) // util 로 분리.
-// #define DEG2RAD(d) ((d)*M_PI / 180.0) // util 로 분리.
-// #define RAD2DEG(d) ((d)*180.0 / M_PI) // util 로 분리.
-// #define MIN(a, b) ((a) < (b) ? (a) : (b)) // util로 분리
-// #define MAX(a, b) ((a) > (b) ? (a) : (b)) // util로 분리
+#define IS_ZERO(d) (fabs(d) < EPS)				// util 로 분리.
+#define DEG2RAD(d) ((d)*M_PI / 180.0)			// util 로 분리.
+#define RAD2DEG(d) ((d)*180.0 / M_PI)			// util 로 분리.
+#define MIN(a, b) ((a) < (b) ? (a) : (b)) // util로 분리
+#define MAX(a, b) ((a) > (b) ? (a) : (b)) // util로 분리
 
 /*
 ** window x, windoy y 와 같음
 */
-// #define SX 720
-// #define SY 480
+#define SX 720
+#define SY 480
 
 /*
 ** Filed of view
 ** TODO : 나중에 utils 로 변경하기
 */
 #define FOV 60
-// #define FOV_H DEG2RAD(FOV) // util로 분리
-// #define FOV_V (FOV_H * (double)SY / (double)SX) // util로 분리
+#define FOV_H DEG2RAD(FOV)											// util로 분리
+#define FOV_V (FOV_H * (double)SY / (double)SX) // util로 분리
 
 #define WALL_H 1.0
 
 #define _2PI 6.28318530717958647692 /* 2 * MPI */
 
-// static const double ANGLE_PER_PIXEL = FOV_H / (SX - 1.); // util로 분리
-// static const double FOVH_2 = FOV_H / 2.0; // util로 분리
+static const double ANGLE_PER_PIXEL = FOV_H / (SX - 1.); // util로 분리
+static const double FOVH_2 = FOV_H / 2.0;								 // util로 분리
 
 enum
 {
@@ -190,8 +190,8 @@ typedef struct s_mlx
 */
 typedef struct s_intersection
 {
-	int xstep;
-	int ystep;
+	double xstep;
+	double ystep;
 	double nx;
 	double ny;
 	double f;
@@ -209,6 +209,15 @@ typedef struct s_moveoffset
 	double ny;
 } t_moveoffset;
 
+typedef struct s_render
+{
+	double px;
+	double py;
+	double th;
+	double f_ec;
+	double f_h;
+	double f_d;
+} t_render;
 /*
 ** Error Handling
 */
@@ -279,14 +288,21 @@ t_image *create_image(t_mlx *mlx, int width, int height);
 */
 int sign(double num);
 double l2dist(double x0, double y0, double x1, double y1);
-double max(double a, double b);
-double min(double a, double b);
+int max(int a, int b);
+int min(int a, int b);
 
 t_bool is_zero(double num);
 double deg_to_rad(double num);
 double rad_to_deg(double num);
 double get_fovh(void);
 double get_fovv(double fovh, double width, double height);
+
+/*
+** DDA util
+*/
+void fill_window(t_mlx *mlx, int color);
+void draw_horiz_line(t_mlx *mlx, double y, double x1, double x2, int color);
+void draw_line(t_mlx *mlx, double x, double y1, double y2, int color);
 
 /*
 ** raycasting math utils

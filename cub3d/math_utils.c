@@ -15,14 +15,14 @@ double l2dist(double x0, double y0, double x1, double y1)
   return sqrt(dx * dx + dy * dy);
 }
 
-double max(double a, double b)
+int max(int a, int b)
 {
   if (a > b)
     return (a);
   return (b);
 }
 
-double min(double a, double b)
+int min(int a, int b)
 {
   if (a > b)
     return (b);

@@ -24,7 +24,7 @@ int load_texture(t_mlx *mlx, t_texture *texture, char *src)
 
 t_image *create_image(t_mlx *mlx, int width, int height)
 {
-  t_image *image;
+  t_image *image = (t_image *)malloc(sizeof(t_image) * 1);
   image->image = mlx_new_image(mlx->mlx, width, height);
   image->data = (int *)mlx_get_data_addr(image->image, &(image->bpp), &(image->size_l), &(image->endian));
   return image;

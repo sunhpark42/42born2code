@@ -4,13 +4,13 @@ void set_ray(t_ray *ray, t_intersection *inter)
 {
   if (inter->hit_side == VERT)
   {
-    *(ray->wdir) = (inter->xstep > 0) ? DIR_W : DIR_E;
+    *ray->wdir = (inter->xstep > 0) ? DIR_W : DIR_E;
     ray->wall_x = inter->nx;
     ray->wall_y = inter->f;
   }
   else
   {
-    *(ray->wdir) = (inter->xstep > 0) ? DIR_N : DIR_S;
+    *ray->wdir = (inter->ystep > 0) ? DIR_S : DIR_N;
     ray->wall_x = inter->g;
     ray->wall_y = inter->ny;
   }
@@ -18,26 +18,31 @@ void set_ray(t_ray *ray, t_intersection *inter)
 
 void set_hit_side(t_mlx *mlx, t_intersection *inter, int *mapx, int *mapy)
 {
-  if (inter->xstep != 0)
-    inter->f = (inter->xstep == 0 ? INFINITY : tan(mlx->ray->th)) * (inter->nx - mlx->player->x) + mlx->player->y;
-  if (inter->ystep != 0)
-    inter->g = (inter->ystep == 0 ? INFINITY : 1. / tan(mlx->ray->th)) * (inter->ny - mlx->player->y) + mlx->player->x;
+  // double xslope = (inter->xstep == 0 ? INFINITY : tan(mlx->ray->th));
+  // double yslope = (inter->ystep == 0 ? INFINITY : 1.0 / tan(mlx->ray->th));
+  // if (inter->xstep != 0)
+  //   inter->f = xslope * (inter->nx - mlx->player->x) + mlx->player->y;
+  // if (inter->ystep != 0)
+  //   inter->g = yslope * (inter->ny - mlx->player->y) + mlx->player->x;
 
-  /* VERT IS NEARER */
-  if (l2dist(mlx->player->x, mlx->player->y, inter->nx, inter->f) < l2dist(mlx->player->x, mlx->player->y, inter->g, inter->ny))
-  {
-    *mapx = (inter->xstep == 1) ? (int)(inter->nx) : (int)(inter->nx) - 1;
-    *mapy = (int)inter->f;
-    inter->hit_side = VERT;
-    printf("V(%d, %2.f) -> ", *mapx, inter->f);
-  }
-  else
-  {
-    *mapx = (int)inter->g;
-    *mapy = (inter->ystep == 1) ? (int)(inter->ny) : (int)(inter->ny) - 1;
-    inter->hit_side = HORIZ;
-    printf("V(%2.f, %d) -> ", inter->g, *mapy);
-  }
+  // double dist_v = l2dist(mlx->player->x, mlx->player->y, inter->nx, inter->f);
+  // double dist_h = l2dist(mlx->player->x, mlx->player->y, inter->g, inter->ny);
+
+  // /* VERT IS NEARER */
+  // if (dist_v < dist_h)
+  // {
+  //   *mapx = (inter->xstep == 1) ? (int)(inter->nx) : (int)(inter->nx) - 1;
+  //   *mapy = (int)inter->f;
+  //   inter->hit_side = VERT;
+  //   printf("V(%d, %2.f) -> ", *mapx, inter->f);
+  // }
+  // else
+  // {
+  //   *mapx = (int)inter->g;
+  //   *mapy = (inter->ystep == 1) ? (int)(inter->ny) : (int)(inter->ny) - 1;
+  //   inter->hit_side = HORIZ;
+  //   printf("V(%2.f, %d) -> ", inter->g, *mapy);
+  // }
 }
 
 void init_intersection(t_mlx *mlx, t_intersection *inter)
