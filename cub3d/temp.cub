@@ -1,14 +1,14 @@
 R 720 480
-NO ./texture/north.jpeg
-SO ./texture/south.jpeg
+NO ./texture/north.xpm
+SO ./texture/south.xpm
 WE ./texture/west.xpm
-EA ./texture/east.jpeg
+EA ./texture/east.xpm
 
-S ./texture/sprite.jpeg
+S ./texture/sprite.xpm
 F 220,100,0
 C 225,30,0
 
-11111111
+ 11111111
 10000201
 10E00001
 10000201
