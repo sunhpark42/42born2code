@@ -57,6 +57,8 @@
 static const double ANGLE_PER_PIXEL = FOV_H / (SX - 1.);
 static const double FOVH_2 = FOV_H / 2.0;
 
+#define COLOR_BLACK 0x000000
+
 /*
 ** ELEMENT DEFINE
 */
